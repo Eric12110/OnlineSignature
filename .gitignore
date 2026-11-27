@@ -1,0 +1,11 @@
+bin/
+obj/
+.vs/
+.vscode/
+
+appsettings.Development.json
+secrets.json
+
+*.db
+*.db-*
+*.db-*
