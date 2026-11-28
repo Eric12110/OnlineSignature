@@ -22,9 +22,39 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Login">Login</a>
-                        </li>
+                         @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                asp-controller="Admin"  
+                                asp-action="Index">
+                                    簽名管理
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <form asp-controller="Admin"
+                                    asp-action="Logout"
+                                    method="post">
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="nav-link text-dark border-0 bg-transparent">
+                                        登出
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                asp-controller="Admin"
+                                asp-action="Login">
+                                    管理者登入
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

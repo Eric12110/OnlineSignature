@@ -95,12 +95,57 @@ public class AdminController : Controller
     [Authorize(Roles = "Admin")]
     [HttpGet]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+        string? name,
+        DateOnly? startDate,
+        DateOnly? endDate)
     {
-        var signatures = await _db.Signatures
-            .AsNoTracking()
+        var query = _db.Signatures.AsNoTracking().AsQueryable();
+
+        // 依姓名查詢
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            query = query.Where(x => x.Name.Contains(name.Trim()));
+        }
+
+        // 台灣時區
+        var taiwanTimeZone =
+            TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei");
+
+        // 起始日期：台灣當天 00:00 轉成 UTC
+        if (startDate.HasValue)
+        {
+            var startTaiwan = DateTime.SpecifyKind(
+                startDate.Value.ToDateTime(TimeOnly.MinValue),
+                DateTimeKind.Unspecified);
+
+            var startUtc = TimeZoneInfo.ConvertTimeToUtc(
+                startTaiwan, taiwanTimeZone);
+
+            query = query.Where(x => x.CreatedAt >= startUtc);
+        }
+
+        // 結束日期：採用隔天 00:00 作為排除界線
+        if (endDate.HasValue)
+        {
+            var endTaiwan = DateTime.SpecifyKind(
+                endDate.Value.AddDays(1).ToDateTime(TimeOnly.MinValue),
+                DateTimeKind.Unspecified);
+
+            var endUtc = TimeZoneInfo.ConvertTimeToUtc(
+                endTaiwan, taiwanTimeZone);
+
+            query = query.Where(x => x.CreatedAt < endUtc);
+        }
+
+        var signatures = await query
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
+
+        // 保留查詢條件，讓畫面可以顯示
+        ViewBag.SearchName = name;
+        ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+        ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
 
         return View(signatures);
     }
@@ -156,5 +201,24 @@ public class AdminController : Controller
         return CryptographicOperations.FixedTimeEquals(
             Encoding.UTF8.GetBytes(a),
             Encoding.UTF8.GetBytes(b));
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var signature = await _db.Signatures
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (signature == null)
+        {
+            return NotFound();
+        }
+
+        _db.Signatures.Remove(signature);
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
     }
 }

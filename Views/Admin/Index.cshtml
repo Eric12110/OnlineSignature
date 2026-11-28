@@ -1,24 +1,53 @@
-
+@using System.Linq
 @model IEnumerable<OnlineSignature.Models.Signature>
 
 @{
     ViewData["Title"] = "簽名管理";
 }
 
+<p>查詢結果：@Model.Count() 筆</p>
 <div class="container py-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>簽名管理</h2>
-
-        <form asp-controller="Admin"
-              asp-action="Logout"
-              method="post">
-            @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-outline-danger">
-                登出
-            </button>
-        </form>
     </div>
+    <form method="get" asp-controller="Admin" asp-action="Index"
+        class="row g-2 mb-4">
+
+        <div class="col-md-3">
+            <input type="text"
+                name="name"
+                value="@ViewBag.SearchName"
+                class="form-control"
+                placeholder="輸入姓名查詢" />
+        </div>
+
+        <div class="col-md-3">
+            <input type="date"
+                name="startDate"
+                value="@ViewBag.StartDate"
+                class="form-control" />
+        </div>
+
+        <div class="col-md-3">
+            <input type="date"
+                name="endDate"
+                value="@ViewBag.EndDate"
+                class="form-control" />
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">
+                查詢
+            </button>
+
+            <a asp-controller="Admin"
+            asp-action="Index"
+            class="btn btn-outline-secondary">
+                清除
+            </a>
+        </div>
+    </form>
 
     <div class="alert alert-info">
         目前共有 @Model.Count() 筆簽名紀錄
@@ -60,11 +89,25 @@
 
                         <td>
                             <a asp-controller="Admin"
-                               asp-action="Download"
-                               asp-route-id="@item.Id"
-                               class="btn btn-sm btn-primary">
+                            asp-action="Download"
+                            asp-route-id="@item.Id"
+                            class="btn btn-sm btn-primary">
                                 下載 PNG
                             </a>
+
+                            <form asp-controller="Admin"
+                                asp-action="Delete"
+                                asp-route-id="@item.Id"
+                                method="post"
+                                class="d-inline"
+                                onsubmit="return confirm('確定要刪除 @item.Name 的簽名資料嗎？');">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    刪除
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 }
