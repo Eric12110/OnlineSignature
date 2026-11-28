@@ -55,7 +55,7 @@ public class HomeController : Controller
             {
                 Name = name.Trim(),
                 SignatureImage = imageBytes,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             _db.Signatures.Add(data);
