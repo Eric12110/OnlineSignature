@@ -1,0 +1,83 @@
+
+@{
+    ViewData["Title"] = "管理者登入";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>管理者登入</title>
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body class="bg-light">
+
+<div class="container">
+    <div class="row justify-content-center align-items-center"
+         style="min-height:100vh;">
+
+        <div class="col-md-5 col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+
+                    <h3 class="text-center mb-4">
+                        管理者登入
+                    </h3>
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">
+                            @ViewBag.Error
+                        </div>
+                    }
+
+                    <form asp-controller="Admin"
+                          asp-action="Login"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label">管理者帳號</label>
+                            <input type="text"
+                                   name="username"
+                                   class="form-control"
+                                   autocomplete="username"
+                                   required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">管理者密碼</label>
+                            <input type="password"
+                                   name="password"
+                                   class="form-control"
+                                   autocomplete="current-password"
+                                   required />
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            登入
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="text-secondary">
+                            返回簽名頁面
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

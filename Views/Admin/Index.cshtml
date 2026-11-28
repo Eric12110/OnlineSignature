@@ -1,0 +1,82 @@
+
+@model IEnumerable<OnlineSignature.Models.Signature>
+
+@{
+    ViewData["Title"] = "簽名管理";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>簽名管理</h2>
+
+        <form asp-controller="Admin"
+              asp-action="Logout"
+              method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger">
+                登出
+            </button>
+        </form>
+    </div>
+
+    <div class="alert alert-info">
+        目前共有 @Model.Count() 筆簽名紀錄
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+
+            <thead class="table-light">
+                <tr>
+                    <th>編號</th>
+                    <th>姓名</th>
+                    <th>簽名時間</th>
+                    <th>簽名圖片</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+
+                        <td>@item.Name</td>
+
+                        <td>
+                            @item.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm:ss")
+                        </td>
+
+                        <td>
+                            <img src="@Url.Action("Image", "Admin", new { id = item.Id })"
+                                 style="max-width:180px; max-height:80px;"
+                                 alt="簽名圖片" />
+                        </td>
+
+                        <td>
+                            <a asp-controller="Admin"
+                               asp-action="Download"
+                               asp-route-id="@item.Id"
+                               class="btn btn-sm btn-primary">
+                                下載 PNG
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            目前沒有簽名紀錄
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
