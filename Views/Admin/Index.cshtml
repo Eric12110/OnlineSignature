@@ -46,7 +46,10 @@
                         <td>@item.Name</td>
 
                         <td>
-                            @item.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm:ss")
+                            @TimeZoneInfo.ConvertTimeFromUtc(
+                                DateTime.SpecifyKind(item.CreatedAt, DateTimeKind.Utc),
+                                TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei")
+                            ).ToString("yyyy/MM/dd HH:mm:ss")
                         </td>
 
                         <td>

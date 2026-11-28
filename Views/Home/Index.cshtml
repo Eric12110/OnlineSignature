@@ -73,7 +73,28 @@
 
         const formData = new FormData();
         formData.append("name", name);
-        formData.append("signature", signaturePad.toDataURL("image/png"));
+        // 建立新的圖片畫布
+        const exportCanvas = document.createElement("canvas");
+
+        exportCanvas.width = canvas.width;
+        exportCanvas.height = canvas.height;
+
+        const ctx = exportCanvas.getContext("2d");
+
+        // 先填滿白色背景
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(
+            0,
+            0,
+            exportCanvas.width,
+            exportCanvas.height
+        );
+
+        // 再將原本的簽名畫上去
+        ctx.drawImage(canvas, 0, 0);
+
+        // 匯出白底 PNG
+        const signature = exportCanvas.toDataURL("image/png");
 
         // ASP.NET Core Anti-forgery Token
         const token = document.querySelector(
