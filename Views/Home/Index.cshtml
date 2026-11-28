@@ -96,6 +96,8 @@
         // 匯出白底 PNG
         const signature = exportCanvas.toDataURL("image/png");
 
+        formData.append("signature", signature);
+        
         // ASP.NET Core Anti-forgery Token
         const token = document.querySelector(
             'input[name="__RequestVerificationToken"]'
